@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { MongoClient, ServerApiVersion } from "mongodb";
+import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -49,13 +49,30 @@ const run = async () => {
     // student select course relate api
     app.get("/selectCourse", async (req, res) => {
       const email = req.query?.email;
-      const result = await selectCourseCollection.find({ email }).toArray();
-      res.send(result);
+      const option = { projection: { classId: 1 } };
+      const selectedClass = await selectCourseCollection
+        .find({ email }, option)
+        .toArray();
+      const query = {
+        _id: {
+          $in: selectedClass?.map((item) => new ObjectId(item?.classId)),
+        },
+      };
+
+      const result = await classCollection.find(query).toArray();
+      res.send({ selectedClass, result });
     });
 
     app.post("/selectCourse", async (req, res) => {
       const course = req.body;
       const result = await selectCourseCollection.insertOne(course);
+      res.send(result);
+    });
+
+    app.delete("/selectCourse/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await selectCourseCollection.deleteOne(query);
       res.send(result);
     });
 
