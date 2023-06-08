@@ -41,6 +41,12 @@ const run = async () => {
       res.send(result);
     });
 
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      const result = await userCollection.insertOne(user);
+      res.send(result);
+    });
+
     // instructor classes relate api
     app.get("/classes", async (req, res) => {
       const result = await classCollection.find().toArray();
