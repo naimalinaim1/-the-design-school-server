@@ -47,6 +47,21 @@ const run = async () => {
       res.send(result);
     });
 
+    app.patch("/users", async (req, res) => {
+      const email = req.query?.email;
+      const role = req.query?.role;
+      if (role !== "instructor" || role !== "admin") {
+        return res.send({ message: "Invalid role send" });
+      }
+      const updateDoc = {
+        $set: {
+          role,
+        },
+      };
+      const result = await userCollection.updateOne({ email }, updateDoc);
+      res.send(result);
+    });
+
     // instructor classes relate api
     app.get("/classes", async (req, res) => {
       const result = await classCollection.find().toArray();
