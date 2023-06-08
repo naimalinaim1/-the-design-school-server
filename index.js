@@ -36,17 +36,30 @@ const run = async () => {
     const userCollection = database.collection("users");
 
     // user relate api
+    // get all users
     app.get("/users", async (req, res) => {
       const result = await userCollection.find().toArray();
       res.send(result);
     });
 
+    // get a user by email
+    app.get("/users/:email", async (req, res) => {
+      const email = req.params?.email;
+      const option = {
+        projection: { _id: 0, role: 1 },
+      };
+      const result = await userCollection.findOne({ email }, option);
+      res.send(result);
+    });
+
+    // create a user
     app.post("/users", async (req, res) => {
       const user = req.body;
       const result = await userCollection.insertOne(user);
       res.send(result);
     });
 
+    // update user role
     app.patch("/users", async (req, res) => {
       const email = req.query?.email;
       const role = req.query?.role;
@@ -63,11 +76,13 @@ const run = async () => {
     });
 
     // instructor classes relate api
+    // get all classes
     app.get("/classes", async (req, res) => {
       const result = await classCollection.find().toArray();
       res.send(result);
     });
 
+    // create a classes
     app.post("/classes", async (req, res) => {
       const classDoc = req.body;
       const result = await classCollection.insertOne(classDoc);
@@ -75,6 +90,7 @@ const run = async () => {
     });
 
     // student select course relate api
+    // get all select course by user email
     app.get("/selectCourse", async (req, res) => {
       const email = req.query?.email;
       const option = { projection: { classId: 1 } };
@@ -97,6 +113,7 @@ const run = async () => {
       res.send(result);
     });
 
+    // delete select course by id
     app.delete("/selectCourse/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
