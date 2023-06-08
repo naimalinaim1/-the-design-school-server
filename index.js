@@ -33,6 +33,13 @@ const run = async () => {
     const database = client.db("finalProjectAss12DB");
     const classCollection = database.collection("classes");
     const selectCourseCollection = database.collection("selectCourse");
+    const userCollection = database.collection("users");
+
+    // user relate api
+    app.get("/users", async (req, res) => {
+      const result = await userCollection.find().toArray();
+      res.send(result);
+    });
 
     // instructor classes relate api
     app.get("/classes", async (req, res) => {
