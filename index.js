@@ -48,13 +48,21 @@ const run = async () => {
       const option = {
         projection: { _id: 0, role: 1 },
       };
+      if (!email) {
+        return res.send({ message: "email not found" });
+      }
       const result = await userCollection.findOne({ email }, option);
-      res.send(result);
+      res.send(result || {});
     });
 
     // create a user
     app.post("/users", async (req, res) => {
       const user = req.body;
+      const email = user?.email;
+      const existUser = await userCollection.findOne({ email });
+      if (existUser) {
+        return res.send({ message: "User is already exist" });
+      }
       const result = await userCollection.insertOne(user);
       res.send(result);
     });
