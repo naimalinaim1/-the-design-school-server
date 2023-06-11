@@ -69,17 +69,14 @@ const run = async () => {
 
     // update user role
     app.patch("/users", async (req, res) => {
-      const email = req.query?.email;
-      const role = req.query?.role;
-      if (role !== "instructor" || role !== "admin") {
-        return res.send({ message: "Invalid role send" });
-      }
+      const { id, role } = req.body;
+      const query = { _id: new ObjectId(id) };
       const updateDoc = {
         $set: {
           role,
         },
       };
-      const result = await userCollection.updateOne({ email }, updateDoc);
+      const result = await userCollection.updateOne(query, updateDoc);
       res.send(result);
     });
 
@@ -90,10 +87,29 @@ const run = async () => {
       res.send(result);
     });
 
+    app.get("/popularClasses", async (req, res) => {
+      // TODO: get popular class
+      const result = await classCollection.find().limit(6).toArray();
+      res.send(result);
+    });
+
     // create a classes
     app.post("/classes", async (req, res) => {
       const classDoc = req.body;
       const result = await classCollection.insertOne(classDoc);
+      res.send(result);
+    });
+
+    // create a classes
+    app.patch("/classes", async (req, res) => {
+      const { id, status } = req.body;
+      const query = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          status,
+        },
+      };
+      const result = await classCollection.updateOne(query, updateDoc);
       res.send(result);
     });
 
