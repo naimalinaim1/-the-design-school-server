@@ -55,6 +55,15 @@ const run = async () => {
       res.send(result || {});
     });
 
+    // get all instructor users
+    app.get("/instructorUsers", async (req, res) => {
+      const query = {
+        role: "instructor",
+      };
+      const result = await userCollection.find(query).toArray();
+      res.send(result);
+    });
+
     // create a user
     app.post("/users", async (req, res) => {
       const user = req.body;
