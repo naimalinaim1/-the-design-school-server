@@ -64,6 +64,15 @@ const run = async () => {
       res.send(result);
     });
 
+    // get popular instructor users
+    app.get("/popularInstructorUsers", async (req, res) => {
+      const query = {
+        role: "instructor",
+      };
+      const result = await userCollection.find(query).limit(6).toArray();
+      res.send(result);
+    });
+
     // create a user
     app.post("/users", async (req, res) => {
       const user = req.body;
